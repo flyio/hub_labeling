@@ -5,6 +5,7 @@ template<class T> inline bool chmin(T &minval, const T &newval) { if (minval>new
 // Akiba's 2-hop indexing (SIGMOD'14)
 struct Akiba {
   typedef pair<int,int> pii;
+  typedef tuple<int,int,int> piii;
   typedef pii Edge;  // (cost, to)
   typedef vector<vector<Edge>> Graph;
 
@@ -26,8 +27,10 @@ struct Akiba {
       if(L.query(v,u)<=d) continue;
       L.add(u,i,d,!forward);
       for(auto [c,w] : G[forward][u]){
-        dist[w] = dist[u] + c;
-        pq.push({dist[w],w});
+        if(dist[u]+c < dist[w]){
+          dist[w] = dist[u] + c;
+          pq.push({dist[w],w});
+        }
       }
     }
   }
