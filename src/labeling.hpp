@@ -10,23 +10,11 @@ struct Labeling {
   vector<vector<bool>> sorted;  // sorted[v][backward]: Is L[v][backward] already sorted?
   Labeling() {}
   Labeling(int V) : L(V, vector<vector<Tuple>>(2)), sorted(V, vector<bool>(2,true)) {}
-  void add(int v, int h, int d, bool backward){
-    L[v][backward].push_back({h,d});
-    sorted[v][backward] = false;
+  void add(int v, int h, int d, bool forward){
+    L[v][forward].push_back({h,d});
   }
-  void sort_all() {
-    for(int u=0; u<L.size(); ++u){
-      sort(L[u][0].begin(), L[u][0].end());
-      sort(L[u][1].begin(), L[u][1].end());
-    }
-  }
-  int query_safe(int u, int v){
-    if(!sorted[u][0]) sort(L[u][0].begin(), L[u][0].end());
-    if(!sorted[v][1]) sort(L[v][1].begin(), L[v][1].end());
-    return query(u,v);
-  }
-  int query(int u, int v){
-    auto &Lf = L[u][0]; auto &Lb = L[v][1];
+  int query(int u, int v, bool forward=true){
+    auto &Lf = L[u][forward]; auto &Lb = L[v][!forward];
     int i=0; int j=0;
     int m=Lf.size(); int n=Lb.size();
     while(i<m && j<n){
@@ -35,7 +23,7 @@ struct Labeling {
       else if(h<g) i++;
       else j++;
     }
-    return -1;  // no hub found
+    return numeric_limits<int>::max();  // no hub found
   }
 
   // I/O
@@ -43,8 +31,8 @@ struct Labeling {
   void write(OutStream &out) {
     out << L.size() << endl;
     for(int u=0;u<L.size();++u){
-      out << L[u][0] << endl;  // forward
-      out << L[u][1] << endl;  // backward
+      out << L[u][0] << endl;  // backward
+      out << L[u][1] << endl;  // forward
     }
   }
   template <class InStream>
